@@ -1,0 +1,22 @@
+meta {
+  name: Post
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://127.0.0.1:51348/products
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "USB-C Hub",
+    "description": "7-in-1 USB-C hub with HDMI, USB 3.0, SD card reader",
+    "price": 39.49,
+    "quantity": 120,
+    "sku": "USBC-HUB-7IN1"
+  }
+  
+}

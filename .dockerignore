@@ -1,0 +1,7 @@
+# Recommended to keep image clean
+.git
+*.swp
+*.env
+*.log
+k8/
+docs/

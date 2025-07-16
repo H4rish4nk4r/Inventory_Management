@@ -1,0 +1,21 @@
+meta {
+  name: Update
+  type: http
+  seq: 4
+}
+
+put {
+  url: {{Hostname}}/products/2
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Gaming Keyboard - Updated",
+    "description": "Updated description with brown switches",
+    "price": 79.99,
+    "sku": "GK-2025-B"
+  }
+  
+}
