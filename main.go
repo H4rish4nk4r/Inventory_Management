@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	docs "inventory/docs" 
+	docs "inventory/docs"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -39,7 +39,6 @@ func init() {
 func main() {
 	r := gin.Default()
 
-	
 	docs.SwaggerInfo.Title = "Inventory API"
 	docs.SwaggerInfo.Description = "This is an API for managing inventory"
 	docs.SwaggerInfo.Version = "1.0"
@@ -47,16 +46,15 @@ func main() {
 	docs.SwaggerInfo.BasePath = "/"
 	docs.SwaggerInfo.Schemes = []string{"http"}
 
-	
-	r.POST("/products", controllers.CreateProduct)
-	r.GET("/products", controllers.GetProducts)
-	r.GET("/products/:id", controllers.GetProductByID)
-	r.PUT("/products/:id", controllers.UpdateProduct)
-	r.DELETE("/products/:id", controllers.DeleteProduct)
+	r.POST("/products/api/v1", controllers.CreateProduct)
+	r.GET("/products/api/v1", controllers.GetProducts)
+	r.GET("/products/api/v1:id", controllers.GetProductByID)
+	r.PUT("/products/api/v1/:id", controllers.UpdateProduct)
+	r.DELETE("/products/api/v1/:id", controllers.DeleteProduct)
 
 	if os.Getenv("APP_ENV") != "production" {
 		r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	}
 
-	r.Run() 
+	r.Run()
 }
