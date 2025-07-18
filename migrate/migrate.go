@@ -6,13 +6,10 @@ import (
 	"log"
 )
 
-func init() {
-	initializers.ConnectToDB()
-
-}
-
 func AutoMigrate() {
 	log.Println("Running AutoMigrate...")
-
-	initializers.DB.AutoMigrate(&models.Product{})
+	err := initializers.DB.AutoMigrate(&models.Product{})
+	if err != nil {
+		log.Fatalf("Failed to migrate: %v", err)
+	}
 }

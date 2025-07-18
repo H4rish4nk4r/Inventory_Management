@@ -4,4 +4,5 @@
 *.env
 *.log
 k8/
+k8s/
 docs/

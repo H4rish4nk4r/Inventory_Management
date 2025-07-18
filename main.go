@@ -20,9 +20,9 @@ func init() {
 	if os.Getenv("APP_ENV") != "production" {
 		err := godotenv.Load()
 		if err != nil {
-			log.Println("⚠️ Could not load .env file")
+			log.Println("Could not load .env file")
 		} else {
-			log.Println("✅ .env file loaded")
+			log.Println(".env file loaded")
 		}
 	}
 
@@ -47,8 +47,8 @@ func main() {
 	docs.SwaggerInfo.Schemes = []string{"http"}
 
 	r.POST("/products/api/v1", controllers.CreateProduct)
-	r.GET("/products/api/v1", controllers.GetProducts)
-	r.GET("/products/api/v1:id", controllers.GetProductByID)
+	r.GET("/productsapi/v1", controllers.GetProducts)
+	r.GET("/products/api/v1/:id", controllers.GetProductByID)
 	r.PUT("/products/api/v1/:id", controllers.UpdateProduct)
 	r.DELETE("/products/api/v1/:id", controllers.DeleteProduct)
 

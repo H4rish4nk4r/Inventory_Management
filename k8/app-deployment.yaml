@@ -27,7 +27,7 @@ spec:
             - name: DB_USER
               value: postgres
             - name: DB_PASSWORD
-              value: xxxxx
+              value: hari123
             - name: DB_NAME
               value: inventory_db
             - name: APP_ENV

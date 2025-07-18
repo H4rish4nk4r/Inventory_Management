@@ -19,7 +19,7 @@ spec:
             - name: POSTGRES_USER
               value: postgres
             - name: POSTGRES_PASSWORD
-              value: xxxxx
+              value: hari123
             - name: POSTGRES_DB
               value: inventory_db
           ports:
