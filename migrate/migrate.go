@@ -1,14 +1,15 @@
 package migrate
 
 import (
-	"inventory/initializers"
 	"inventory/models"
 	"log"
+
+	"gorm.io/gorm"
 )
 
-func AutoMigrate() {
+func AutoMigrate(db *gorm.DB) {
 	log.Println("Running AutoMigrate...")
-	err := initializers.DB.AutoMigrate(&models.Product{})
+	err := db.AutoMigrate(&models.Product{})
 	if err != nil {
 		log.Fatalf("Failed to migrate: %v", err)
 	}

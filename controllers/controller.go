@@ -1,12 +1,24 @@
 package controllers
 
 import (
-	"inventory/initializers"
+	"inventory/interfaces"
 	"inventory/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
+
+// type DBI interface {
+// 	Create(models.Product) error
+// }
+
+// type ProdutController struct {
+// 	DB DBI
+// }
+
+// func NewProductController(db DBI) ProdutController {
+// 	return ProdutController{DB: db}
+// }
 
 // CreateProduct godoc
 // @Summary      Create a new product
@@ -19,10 +31,21 @@ import (
 // @Failure      400      {object}  map[string]string
 // @Failure      500      {object}  map[string]string
 // @Router       /products [post]
-func CreateProduct(c *gin.Context) {
-	var input models.Product
+// func (pc ProdutController) CreateProduct(c *gin.Context)
 
-	if err := c.ShouldBindJSON(&input); err != nil {
+type ProductController struct {
+	Repo interfaces.ProductRepository
+}
+
+func NewProductController(repo interfaces.ProductRepository) *ProductController {
+	return &ProductController{Repo: repo}
+}
+
+func (pc *ProductController) CreateProduct(c *gin.Context) {
+	var input models.Product
+	err := c.ShouldBindJSON(&input)
+
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -35,7 +58,7 @@ func CreateProduct(c *gin.Context) {
 		SKU:         input.SKU,
 	}
 
-	if result := initializers.DB.Create(&product); result.Error != nil {
+	if err := pc.Repo.Create(&product); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create product"})
 		return
 	}
@@ -51,10 +74,10 @@ func CreateProduct(c *gin.Context) {
 // @Success      200  {array}   models.Product
 // @Failure      500  {object}  map[string]string
 // @Router       /products [get]
-func GetProducts(c *gin.Context) {
-	var products []models.Product
+func (pc *ProductController) GetProducts(c *gin.Context) {
+	products, err := pc.Repo.FindAll()
 
-	if result := initializers.DB.Find(&products); result.Error != nil {
+	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch products"})
 		return
 	}
@@ -71,11 +94,11 @@ func GetProducts(c *gin.Context) {
 // @Success      200  {object}  models.Product
 // @Failure      404  {object}  map[string]string
 // @Router       /products/{id} [get]
-func GetProductByID(c *gin.Context) {
+func (pc *ProductController) GetProductByID(c *gin.Context) {
 	id := c.Param("id")
 	var product models.Product
 
-	if result := initializers.DB.First(&product, id); result.Error != nil {
+	if _, err := pc.Repo.FindByID(id); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
 		return
 	}
@@ -96,28 +119,32 @@ func GetProductByID(c *gin.Context) {
 // @Failure      404      {object}  map[string]string
 // @Failure      500      {object}  map[string]string
 // @Router       /products/{id} [put]
-func UpdateProduct(c *gin.Context) {
+func (pc *ProductController) UpdateProduct(c *gin.Context) {
 	id := c.Param("id")
-	var product models.Product
 
-	if result := initializers.DB.First(&product, id); result.Error != nil {
+	// Step 1: Find existing product
+	product, err := pc.Repo.FindByID(id)
+	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Product not found"})
 		return
 	}
 
+	// Step 2: Parse new values
 	var input models.Product
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
+	// Step 3: Update the fields
 	product.Name = input.Name
 	product.Description = input.Description
 	product.Price = input.Price
 	product.Quantity = input.Quantity
 	product.SKU = input.SKU
 
-	if result := initializers.DB.Save(&product); result.Error != nil {
+	// Step 4: Save to DB
+	if err := pc.Repo.Update(product); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update product"})
 		return
 	}
@@ -134,9 +161,9 @@ func UpdateProduct(c *gin.Context) {
 // @Success      200  {object}  map[string]string
 // @Failure      500  {object}  map[string]string
 // @Router       /products/{id} [delete]
-func DeleteProduct(c *gin.Context) {
+func (pc *ProductController) DeleteProduct(c *gin.Context) {
 	id := c.Param("id")
-	if result := initializers.DB.Delete(&models.Product{}, id); result.Error != nil {
+	if result := pc.Repo.Delete(id); result != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete product"})
 		return
 	}

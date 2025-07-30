@@ -9,9 +9,10 @@ import (
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
+// var DB *gorm.DB
 
-func ConnectToDB() {
+func ConnectToDB() *gorm.DB {
+	var DB *gorm.DB
 
 	host := os.Getenv("DB_HOST")
 	user := os.Getenv("DB_USER")
@@ -31,4 +32,5 @@ func ConnectToDB() {
 
 	log.Println("Connected to the database")
 	DB = db
+	return DB
 }
