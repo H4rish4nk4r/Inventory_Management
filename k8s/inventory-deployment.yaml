@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: inventory-app
+  namespace: default
 spec:
   replicas: 1
   selector:
@@ -11,11 +12,22 @@ spec:
     metadata:
       labels:
         app: inventory
+      # annotations: 
+      #   prometheus.io/scrape: "true"
+      #   prometheus.io/path: "/metrics"
+      #   prometheus.io/port: "8080"
     spec:
       initContainers:
         - name: wait-for-postgres
           image: busybox
-          command: ['sh', '-c', 'until nslookup postgres-0.postgres; do echo "Waiting for postgres..."; sleep 2; done']
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z postgres-0.postgres.default.svc.cluster.local 5432; do
+                echo "Waiting for postgres to be ready..."
+                sleep 2
+              done
       containers:
         - name: inventory
           image: inventory-app:latest
